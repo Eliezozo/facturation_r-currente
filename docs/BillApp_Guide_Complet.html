@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BillApp - Guide complet</title>
+  <style>
+    :root {
+      --bg: #0b0b0b;
+      --panel: #141414;
+      --panel-2: #1b1b1b;
+      --text: #f5f5f5;
+      --muted: #b5b5b5;
+      --accent: #e50914;
+      --accent-2: #8e0009;
+      --ok: #22c55e;
+      --border: #2a2a2a;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Inter", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .hero {
+      background: linear-gradient(120deg, rgba(229,9,20,0.22), rgba(142,0,9,0.12));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px;
+      margin-bottom: 22px;
+    }
+
+    h1, h2, h3 { margin: 0 0 10px; }
+    h1 { font-size: 32px; }
+    h2 {
+      margin-top: 28px;
+      font-size: 24px;
+      border-left: 4px solid var(--accent);
+      padding-left: 12px;
+    }
+    h3 { margin-top: 18px; font-size: 19px; }
+
+    p { margin: 8px 0; color: var(--text); }
+    .muted { color: var(--muted); }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    ul, ol { margin: 8px 0 8px 22px; }
+    li { margin: 4px 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 18px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 9px 10px;
+      vertical-align: top;
+    }
+    th {
+      background: #101010;
+      text-align: left;
+      color: #ffffff;
+    }
+
+    code {
+      background: #111;
+      border: 1px solid #2b2b2b;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-family: "Consolas", "Menlo", monospace;
+      font-size: 12px;
+      color: #ffd7da;
+    }
+
+    pre {
+      background: #101010;
+      border: 1px solid #2b2b2b;
+      border-radius: 12px;
+      padding: 14px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      color: #ffe7e9;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      border: 1px solid #3a3a3a;
+      background: #121212;
+      color: #ddd;
+      margin-right: 6px;
+    }
+
+    .ok {
+      border-color: rgba(34, 197, 94, .4);
+      color: #d2ffe0;
+      background: rgba(34, 197, 94, .14);
+    }
+
+    .warning {
+      background: #1a1111;
+      border: 1px solid #3a1d1d;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .footer {
+      margin-top: 28px;
+      color: #9a9a9a;
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .page { max-width: none; }
+      .card, .hero, .warning, pre, code { background: #fff; color: #111; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <h1>BillApp - Guide Complet (Base de Donnees a l'Interface)</h1>
+      <p class="muted">
+        Document d'apprentissage personnel: architecture, logique metier, flux de facturation recurrente,
+        Inertia/React TypeScript, theming Netflix Dark, mailing et bonnes pratiques de production.
+      </p>
+      <p>
+        <span class="badge">Laravel 12</span>
+        <span class="badge">Inertia.js</span>
+        <span class="badge">React + TypeScript</span>
+        <span class="badge">Tailwind CSS</span>
+        <span class="badge">MySQL</span>
+      </p>
+    </section>
+
+    <h2>1. Vision Produit</h2>
+    <div class="card">
+      <p><strong>BillApp</strong> est un SaaS de facturation recurrente inspire d'une ergonomie streaming moderne.</p>
+      <ul>
+        <li>Inscription / connexion utilisateur.</li>
+        <li>Souscription a un plan avec recurrence mensuelle ou annuelle.</li>
+        <li>Generation immediate d'une premiere facture.</li>
+        <li>Facturation automatique par commande planifiee (<code>app:run-billing</code>).</li>
+        <li>Historique de factures visible depuis le dashboard, meme sans abonnement actif.</li>
+        <li>Envoi email HTML Dark Mode de chaque facture.</li>
+      </ul>
+    </div>
+
+    <h2>2. Stack Technique et Responsabilites</h2>
+    <table>
+      <thead>
+        <tr><th>Couche</th><th>Technologie</th><th>Role dans BillApp</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Backend</td><td>Laravel 12</td><td>Routes, validation, transactions, Eloquent, commandes Artisan, mails.</td></tr>
+        <tr><td>Frontend</td><td>Inertia + React + TypeScript</td><td>Pages SPA server-driven, formulaires, rendu des etats d'abonnement/factures.</td></tr>
+        <tr><td>UI</td><td>Tailwind CSS</td><td>Theme Netflix Dark: fond #050505, cartes #141414, accent #E50914.</td></tr>
+        <tr><td>DB</td><td>MySQL/SQLite</td><td>Persistance plans, subscriptions, invoices, users.</td></tr>
+        <tr><td>Email</td><td>Laravel Mail + Symfony Mailer</td><td>Envoi des factures HTML avec reference et montant FCFA.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>3. Architecture Base de Donnees</h2>
+    <h3>3.1 Tables metier</h3>
+    <table>
+      <thead>
+        <tr><th>Table</th><th>Colonnes principales</th><th>Notes metier</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>plans</code></td>
+          <td><code>id</code>, <code>name</code>, <code>price_xof</code>, <code>frequency</code></td>
+          <td>Catalogue des offres. Seed initial: Basique mensuel, Premium annuel.</td>
+        </tr>
+        <tr>
+          <td><code>subscriptions</code></td>
+          <td><code>user_id</code>, <code>plan_id</code>, <code>billing_period</code>, <code>status</code>, <code>next_billing_at</code></td>
+          <td>Suivi d'abonnement actif/annule + prochaine echeance.</td>
+        </tr>
+        <tr>
+          <td><code>invoices</code></td>
+          <td><code>user_id</code>, <code>amount</code>, <code>reference</code>, <code>billed_at</code></td>
+          <td>Trace de facturation immutable cote historique.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>3.2 Choix importants de schema</h3>
+    <div class="card">
+      <ul>
+        <li><code>price_xof</code> en entier non signe: evite les erreurs de flottants sur la monnaie.</li>
+        <li><code>reference</code> unique: garantit l'unicite de facture.</li>
+        <li>Index <code>subscriptions(status, next_billing_at)</code>: critique pour le scan des echeances.</li>
+        <li>Index <code>invoices(billed_at)</code>: accelere le tri historique recent.</li>
+      </ul>
+    </div>
+
+    <h3>3.3 Relations Eloquent</h3>
+    <pre>Plan hasMany Subscription
+User hasOne activeSubscription(where status=active)
+User hasMany subscriptions
+User hasMany invoices
+Subscription belongsTo User
+Subscription belongsTo Plan
+Invoice belongsTo User</pre>
+
+    <h2>4. Logique de Souscription (SubscriptionController)</h2>
+    <h3>4.1 Validation d'entree</h3>
+    <pre>plan_id: required|integer|exists:plans,id
+billing_period: required|in:month,year</pre>
+
+    <h3>4.2 Regles metier appliquees</h3>
+    <div class="card">
+      <ol>
+        <li>Interdire une nouvelle souscription si un abonnement actif existe deja.</li>
+        <li>Verifier la coherence entre <code>plan.frequency</code> et <code>billing_period</code>.</li>
+        <li>Calculer <code>next_billing_at</code> avec overflow-safe:
+          <code>addMonthNoOverflow()</code> ou <code>addYearNoOverflow()</code>.</li>
+        <li>Dans une transaction DB:
+          creer subscription + premiere invoice.</li>
+        <li>Envoyer l'email de facture apres transaction (try/catch + log en cas d'echec).</li>
+      </ol>
+    </div>
+
+    <h3>4.3 Pourquoi la date de prochaine facturation etait mauvaise</h3>
+    <div class="warning">
+      Le bug initial venait d'un calcul ou d'un type date incoherent. La version stabilisee renvoie
+      <code>CarbonInterface</code> et calcule une date future avec <code>addMonthNoOverflow()</code> ou
+      <code>addYearNoOverflow()</code>, puis stocke explicitement <code>next_billing_at</code>.
+    </div>
+
+    <h2>5. Automatisation de Facturation (Commande Artisan)</h2>
+    <h3>5.1 Signature</h3>
+    <pre>php artisan app:run-billing</pre>
+
+    <h3>5.2 Algorithme de run</h3>
+    <div class="card">
+      <ol>
+        <li>Charger les abonnements actifs arrives a echeance:
+          <code>status=active</code> et <code>next_billing_at &lt;= now()</code>.</li>
+        <li>Pour chaque abonnement du:</li>
+        <li>Creer facture (<code>amount = plan.price_xof</code>, nouvelle reference <code>INV-XXXX</code>).</li>
+        <li>Avancer <code>next_billing_at</code> a partir de l'ancienne echeance (pas a partir de now).</li>
+        <li>Tenter l'envoi email de facture (echec journalise, sans rollback metier).</li>
+      </ol>
+    </div>
+
+    <h3>5.3 Planification recommandee</h3>
+    <pre>// routes/console.php ou bootstrap scheduler
+Schedule::command('app:run-billing')->everyMinute();</pre>
+    <p class="muted">En production, lancer le scheduler systeme (cron) pour declencher Laravel Scheduler.</p>
+
+    <h2>6. Emails de Facture (InvoiceMail)</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Contenu</h3>
+        <ul>
+          <li>Objet: <code>Votre facture INV-XXXX - BillApp</code></li>
+          <li>Vue HTML: <code>resources/views/emails/invoice.blade.php</code></li>
+          <li>Montant formate en FCFA</li>
+          <li>Reference facture</li>
+          <li>Date locale de facturation</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Robustesse</h3>
+        <ul>
+          <li>Try/catch autour de <code>Mail::send</code>.</li>
+          <li>Log d'erreur detaille (user_id, reference, message).</li>
+          <li>Le metier ne casse pas si SMTP tombe.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>6.1 En local vs production</h3>
+    <div class="warning">
+      En local, les utilisateurs ne recoivent pas de vrais mails sans SMTP public.
+      Utiliser Mailpit/Mailhog pour visualiser localement. En production: Brevo, Mailgun, Postmark, SES, etc.
+    </div>
+
+    <h2>7. Dashboard Inertia/React (Logique UI)</h2>
+    <h3>7.1 Donnees envoyees par DashboardController</h3>
+    <pre>{
+  plans: BillingPlan[],
+  activeSubscription: BillingSubscription | null,
+  invoices: BillingInvoice[] // 20 dernieres factures
+}</pre>
+
+    <h3>7.2 Comportements interface</h3>
+    <div class="card">
+      <ul>
+        <li>Header: retour accueil, logo unifie, bouton profil a droite, bouton deconnexion.</li>
+        <li>Si non abonne: formulaire de souscription (plan + periode + recap dynamique).</li>
+        <li>Si abonne: badge <span class="badge ok">Actif</span>, plan, prix, prochaine facturation, bouton annulation.</li>
+        <li>Historique factures visible meme sans abonnement actif.</li>
+        <li>Boutons de navigation retour (dont retour accueil depuis dashboard).</li>
+      </ul>
+    </div>
+
+    <h3>7.3 Typage TypeScript</h3>
+    <pre>// resources/js/types/billing.ts
+export type PlanFrequency = 'month' | 'year';
+export type SubscriptionStatus = 'active' | 'cancelled';
+
+export interface BillingPlan {
+  id: number;
+  name: string;
+  price_xof: number;
+  frequency: PlanFrequency;
+}
+
+export interface BillingSubscription {
+  id: number;
+  status: SubscriptionStatus;
+  billing_period: PlanFrequency;
+  next_billing_at: string;
+  plan: BillingPlan;
+}
+
+export interface BillingInvoice {
+  id: number;
+  amount: number;
+  reference: string;
+  billed_at: string;
+}</pre>
+
+    <h3>7.4 Format monetaire FCFA</h3>
+    <pre>const formatMoney = (value: number) =>
+  `${new Intl.NumberFormat('fr-FR').format(value)} FCFA`;</pre>
+
+    <h2>8. Design System "Netflix Dark" + Animations</h2>
+    <div class="card">
+      <ul>
+        <li>Fond global: <code>#050505</code>.</li>
+        <li>Cartes: <code>#141414</code>.</li>
+        <li>Accent principal: <code>#E50914</code>.</li>
+        <li>Transitions modernes: hover elevation, scale, glow, marquee, sheen, fadeUp.</li>
+        <li>Navbar accueil: fixed + flottante au scroll + largeur complete.</li>
+      </ul>
+    </div>
+
+    <h3>8.1 Uniformisation logo</h3>
+    <table>
+      <thead><tr><th>Contexte</th><th>Variant logo</th></tr></thead>
+      <tbody>
+        <tr><td>Pages auth (login/register)</td><td>Logo blanc (<code>variant="white"</code>)</td></tr>
+        <tr><td>Autres pages (welcome/dashboard)</td><td>Logo degrade rouge (<code>variant="gradient"</code>)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>9. Profil Utilisateur</h2>
+    <div class="card">
+      <ul>
+        <li>Edition du nom et email via page settings profile.</li>
+        <li>Acces depuis bouton <code>MON PROFIL</code> dans le dashboard.</li>
+        <li>Bouton deconnexion conserve dans le header (sans nom utilisateur affiche a cote).</li>
+      </ul>
+    </div>
+
+    <h2>10. Routes metier principales</h2>
+    <pre>GET  /                  -> welcome
+GET  /dashboard         -> DashboardController (auth+verified)
+POST /subscriptions     -> SubscriptionController@store
+PATCH/subscriptions/cancel -> SubscriptionController@cancel
+POST /logout            -> deconnexion
+GET  /settings/profile  -> edition profil</pre>
+
+    <h2>11. Workflow de bout en bout</h2>
+    <div class="card">
+      <ol>
+        <li>L'utilisateur se connecte et ouvre dashboard.</li>
+        <li>Choisit plan + periode, puis confirme abonnement.</li>
+        <li>Backend cree abonnement actif + facture initiale (transaction).</li>
+        <li>Email facture envoye (ou log erreur sans casser le flux utilisateur).</li>
+        <li>Scheduler/commande facture automatiquement aux echeances suivantes.</li>
+        <li>Dashboard affiche et met a jour l'historique des factures.</li>
+      </ol>
+    </div>
+
+    <h2>12. Commandes utiles de dev</h2>
+    <pre>php artisan migrate
+php artisan serve
+npm run dev
+php artisan app:run-billing
+php artisan queue:work   // si emails en file d'attente
+php artisan schedule:work // test local du scheduler</pre>
+
+    <h2>13. Tests recommandes (important)</h2>
+    <div class="card">
+      <h3>Cas prioritaires</h3>
+      <ul>
+        <li>Souscription refusee si abonnement actif deja present.</li>
+        <li>Souscription refusee si periode != frequence du plan.</li>
+        <li>Creation transactionnelle: subscription + invoice atomiques.</li>
+        <li><code>next_billing_at</code> est bien dans le futur (mois/annee).</li>
+        <li>Commande billing cree facture et avance correctement la recurrence.</li>
+        <li>Historique visible meme quand <code>activeSubscription = null</code>.</li>
+      </ul>
+
+      <h3>Extrait de strategie</h3>
+      <pre>- Tests Feature HTTP pour SubscriptionController
+- Tests Unit pour generateReference et calcul recurrence
+- Tests Console pour app:run-billing
+- Mail::fake() pour verifier emission des emails</pre>
+    </div>
+
+    <h2>14. Recommandations de production</h2>
+    <div class="card">
+      <ul>
+        <li>Utiliser un provider SMTP fiable + domaine verifie (SPF, DKIM, DMARC).</li>
+        <li>Passer l'envoi email en queue async (<code>ShouldQueue</code>) pour performance.</li>
+        <li>Ajouter idempotence et verrouillage pour eviter double facturation en concurrence.</li>
+        <li>Ajouter webhooks paiement si integration future Stripe/Paystack/CinetPay.</li>
+        <li>Mettre monitoring: logs, alertes erreurs mail, ratio factures creees/envoyees.</li>
+      </ul>
+    </div>
+
+    <h2>15. Resume Pedagogique</h2>
+    <div class="card">
+      <p>
+        Tu as construit une base SaaS solide: schema propre, logique d'abonnement coherente,
+        facturation recurrente automatisee, experience UI premium, typage TypeScript clair,
+        et mecanisme email resilient. Le socle est pret pour des evolutions paiement reel,
+        analytics et multi-plans plus avances.
+      </p>
+    </div>
+
+    <p class="footer">
+      BillApp - Guide genere pour apprentissage personnel. Version du document: 13 fevrier 2026.
+    </p>
+  </div>
+</body>
+</html>
