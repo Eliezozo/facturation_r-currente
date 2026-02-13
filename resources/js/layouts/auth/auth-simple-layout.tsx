@@ -18,7 +18,7 @@ export default function AuthSimpleLayout({
                     <div className="mb-8 flex flex-col items-center gap-4 text-center">
                         <Link href={home()} className="group inline-flex items-center gap-3">
                             <div className="transition-transform duration-300 group-hover:scale-105">
-                                <AppLogo />
+                                <AppLogo variant="white" />
                             </div>
                         </Link>
 

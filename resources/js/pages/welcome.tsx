@@ -47,41 +47,43 @@ export default function Welcome({ canRegister = true }: WelcomeProps) {
                 <div className="pointer-events-none fixed inset-0 -z-20 bg-[radial-gradient(circle_at_20%_15%,rgba(229,9,20,0.25),transparent_42%),radial-gradient(circle_at_80%_5%,rgba(56,189,248,0.18),transparent_34%),radial-gradient(circle_at_50%_100%,rgba(16,185,129,0.16),transparent_35%)]" />
                 <div className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.02)_45%,transparent_52%)] [animation:sheen_8s_linear_infinite]" />
 
-                <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6">
-                    <div className="flex items-center gap-3 [animation:fadeUp_700ms_ease-out]">
-                        <AppLogo />
-                    </div>
+                <header className="fixed top-0 left-0 z-50 w-full px-3 pt-2">
+                    <div className="flex items-center justify-between  border border-white/15 bg-black/65 px-70 py-1 shadow-[0_14px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+                        <div className="flex items-center gap-3 [animation:fadeUp_700ms_ease-out]">
+                            <AppLogo sizeClassName="h-[5rem]" />
+                        </div>
 
-                    <nav className="flex items-center gap-3 [animation:fadeUp_900ms_ease-out]">
-                        {auth.user ? (
-                            <Link
-                                href={dashboard()}
-                                className="rounded-full border border-white/20 px-5 py-2 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/10"
-                            >
-                                Ouvrir le Dashboard
-                            </Link>
-                        ) : (
-                            <>
+                        <nav className="flex items-center gap-3 [animation:fadeUp_900ms_ease-out]">
+                            {auth.user ? (
                                 <Link
-                                    href={login()}
+                                    href={dashboard()}
                                     className="rounded-full border border-white/20 px-5 py-2 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/10"
                                 >
-                                    Connexion
+                                    Ouvrir le Dashboard
                                 </Link>
-                                {canRegister && (
+                            ) : (
+                                <>
                                     <Link
-                                        href={register()}
-                                        className="rounded-full bg-[#E50914] px-5 py-2 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-[#ff1f2b]"
+                                        href={login()}
+                                        className="rounded-full border border-white/20 px-5 py-2 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/10"
                                     >
-                                        Essai gratuit
+                                        Connexion
                                     </Link>
-                                )}
-                            </>
-                        )}
-                    </nav>
+                                    {canRegister && (
+                                        <Link
+                                            href={register()}
+                                            className="rounded-full bg-[#E50914] px-5 py-2 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-[#ff1f2b]"
+                                        >
+                                                Créer un compte
+                                        </Link>
+                                    )}
+                                </>
+                            )}
+                        </nav>
+                    </div>
                 </header>
 
-                <main className="mx-auto w-full max-w-7xl px-6 pb-16 pt-6">
+                <main className="mx-auto w-full max-w-7xl px-6 pb-16 pt-32">
                     <section className="relative overflow-hidden rounded-[2.2rem] border border-white/10 bg-[#0b0b0b] p-6 sm:p-8 lg:p-10">
                         <video
                             className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25"
