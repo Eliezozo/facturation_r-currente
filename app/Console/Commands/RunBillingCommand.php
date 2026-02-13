@@ -7,7 +7,9 @@ use App\Models\Invoice;
 use App\Models\Subscription;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class RunBillingCommand extends Command
 {
@@ -61,12 +63,20 @@ class RunBillingCommand extends Command
                     'next_billing_at' => $nextBillingAt->toDateTimeString(),
                 ]);
 
-                Mail::to($subscription->user->email)->send(new InvoiceMail(
-                    userName: $subscription->user->name,
-                    amount: $invoice->amount,
-                    reference: $invoice->reference,
-                    billedAt: $invoice->billed_at,
-                ));
+                try {
+                    Mail::to($subscription->user->email)->send(new InvoiceMail(
+                        userName: $subscription->user->name,
+                        amount: $invoice->amount,
+                        reference: $invoice->reference,
+                        billedAt: $invoice->billed_at,
+                    ));
+                } catch (Throwable $exception) {
+                    Log::error('Invoice email failed during recurring billing.', [
+                        'user_id' => $subscription->user_id,
+                        'invoice_reference' => $invoice->reference,
+                        'error' => $exception->getMessage(),
+                    ]);
+                }
 
                 $processed++;
             });

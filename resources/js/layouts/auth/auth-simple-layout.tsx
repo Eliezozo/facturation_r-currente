@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import AppLogoIcon from '@/components/app-logo-icon';
+import AppLogo from '@/components/app-logo';
 import type { AuthLayoutProps } from '@/types';
 import { home } from '@/routes';
 
@@ -17,12 +17,9 @@ export default function AuthSimpleLayout({
                 <div className="rounded-3xl border border-white/15 bg-[#111111]/90 p-7 shadow-[0_30px_100px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:p-9">
                     <div className="mb-8 flex flex-col items-center gap-4 text-center">
                         <Link href={home()} className="group inline-flex items-center gap-3">
-                            <div className="grid h-11 w-11 place-items-center rounded-xl bg-[#E50914] shadow-[0_0_45px_rgba(229,9,20,0.55)] transition-transform duration-300 group-hover:scale-105">
-                                <AppLogoIcon className="size-5 fill-current text-white" />
+                            <div className="transition-transform duration-300 group-hover:scale-105">
+                                <AppLogo />
                             </div>
-                            <span className="text-sm font-semibold tracking-[0.14em] text-zinc-200 uppercase">
-                                BillApp Streaming
-                            </span>
                         </Link>
 
                         <div className="space-y-2">

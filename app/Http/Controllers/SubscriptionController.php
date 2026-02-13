@@ -10,8 +10,10 @@ use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class SubscriptionController extends Controller
 {
@@ -61,12 +63,20 @@ class SubscriptionController extends Controller
             ]);
         });
 
-        Mail::to($user->email)->send(new InvoiceMail(
-            userName: $user->name,
-            amount: $invoice->amount,
-            reference: $invoice->reference,
-            billedAt: $invoice->billed_at,
-        ));
+        try {
+            Mail::to($user->email)->send(new InvoiceMail(
+                userName: $user->name,
+                amount: $invoice->amount,
+                reference: $invoice->reference,
+                billedAt: $invoice->billed_at,
+            ));
+        } catch (Throwable $exception) {
+            Log::error('Invoice email failed after subscription creation.', [
+                'user_id' => $user->id,
+                'invoice_reference' => $invoice->reference,
+                'error' => $exception->getMessage(),
+            ]);
+        }
 
         return redirect()->route('dashboard')->with('success', 'Abonnement active avec succes.');
     }

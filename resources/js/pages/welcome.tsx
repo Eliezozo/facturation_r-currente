@@ -1,5 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Clapperboard, Play, Sparkles, Tv, Wifi, Zap } from 'lucide-react';
+import { Clapperboard, Sparkles, Tv, Wifi, Zap } from 'lucide-react';
+import AppLogo from '@/components/app-logo';
 import { dashboard, login, register } from '@/routes';
 
 type WelcomeProps = {
@@ -48,10 +49,7 @@ export default function Welcome({ canRegister = true }: WelcomeProps) {
 
                 <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6">
                     <div className="flex items-center gap-3 [animation:fadeUp_700ms_ease-out]">
-                        <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#E50914] shadow-[0_0_45px_rgba(229,9,20,0.55)]">
-                            <Play className="ml-0.5 h-4 w-4 fill-white text-white" />
-                        </div>
-                        <div className="text-xl font-extrabold tracking-wide">BillApp Streaming</div>
+                        <AppLogo />
                     </div>
 
                     <nav className="flex items-center gap-3 [animation:fadeUp_900ms_ease-out]">

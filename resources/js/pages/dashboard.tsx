@@ -1,4 +1,5 @@
-import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import AppLogo from '@/components/app-logo';
 import type { Auth, BillingInvoice, BillingPlan, BillingSubscription } from '@/types';
 
 interface DashboardProps {
@@ -23,9 +24,15 @@ export default function Dashboard({
     activeSubscription,
     invoices,
 }: DashboardProps) {
-    const page = usePage<{ auth: Auth; errors: Record<string, string> }>();
-    const user = page.props.auth.user;
+    const page = usePage<{
+        auth: Auth;
+        errors: Record<string, string>;
+        flash?: {
+            success?: string | null;
+        };
+    }>();
     const errors = page.props.errors ?? {};
+    const successMessage = page.props.flash?.success;
 
     const defaultPlan = plans[0];
     const { data, setData, post, processing } = useForm<SubscriptionForm>({
@@ -54,13 +61,24 @@ export default function Dashboard({
             <div className="min-h-screen bg-[#050505] text-white">
                 <header className="border-b border-white/10 bg-[#0b0b0b]/95">
                     <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-                        <h1 className="text-2xl font-bold tracking-wide">
-                            Bill<span className="text-[#E50914]">App</span>
-                        </h1>
                         <div className="flex items-center gap-3">
-                            <div className="rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white/90">
-                                {user.name}
+                            <Link
+                                href="/"
+                                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold tracking-wide text-zinc-200 transition hover:border-white/40 hover:bg-white/10"
+                            >
+                                RETOUR ACCUEIL
+                            </Link>
+                            <div className="rounded-full border border-white/15 px-3 py-1.5">
+                                <AppLogo />
                             </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Link
+                                href="/settings/profile"
+                                className="rounded-full border border-[#E50914]/45 px-4 py-2 text-xs font-semibold tracking-wide text-red-200 transition hover:border-[#E50914] hover:bg-[#E50914]/15"
+                            >
+                                MON PROFIL
+                            </Link>
                             <button
                                 type="button"
                                 onClick={logout}
@@ -73,6 +91,23 @@ export default function Dashboard({
                 </header>
 
                 <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-10">
+                    {successMessage && (
+                        <section className="rounded-xl border border-emerald-400/35 bg-emerald-500/10 p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                                <p className="text-sm font-medium text-emerald-200">
+                                    {successMessage}
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => window.history.back()}
+                                    className="rounded-lg border border-emerald-300/35 bg-emerald-500/10 px-3 py-2 text-xs font-semibold tracking-wide text-emerald-100 transition hover:bg-emerald-500/20"
+                                >
+                                    RETOUR PAGE PRECEDENTE
+                                </button>
+                            </div>
+                        </section>
+                    )}
+
                     {!activeSubscription ? (
                         <section className="rounded-2xl border border-white/10 bg-[#141414] p-8 shadow-2xl shadow-black/40">
                             <h2 className="text-3xl font-bold">Configurez votre facturation</h2>
