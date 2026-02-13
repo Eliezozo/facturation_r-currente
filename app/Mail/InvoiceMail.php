@@ -30,7 +30,7 @@ class InvoiceMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Votre facture {$this->reference} - BillApp",
+            subject: "Votre facture {$this->reference} - Stream Deck",
         );
     }
 

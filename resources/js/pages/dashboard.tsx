@@ -68,7 +68,10 @@ export default function Dashboard({
                             >
                                 RETOUR ACCUEIL
                             </Link>
-                            <div className="rounded-full px-3 py-0.5">
+
+                        </div>
+                        <div>
+                            <div className="flex items-center justify-center rounded-full px-3 py-0.5">
                                 <AppLogo />
                             </div>
                         </div>
@@ -127,11 +130,10 @@ export default function Dashboard({
                                                 setData('plan_id', plan.id);
                                                 setData('billing_period', plan.frequency);
                                             }}
-                                            className={`rounded-xl border p-5 text-left transition ${
-                                                isSelected
+                                            className={`rounded-xl border p-5 text-left transition ${isSelected
                                                     ? 'border-[#E50914] bg-[#1d1d1d] shadow-lg shadow-[#E50914]/20'
                                                     : 'border-white/10 bg-[#0f0f0f] hover:border-white/25'
-                                            }`}
+                                                }`}
                                         >
                                             <p className="text-lg font-semibold">{plan.name}</p>
                                             <p className="mt-3 text-2xl font-bold">
