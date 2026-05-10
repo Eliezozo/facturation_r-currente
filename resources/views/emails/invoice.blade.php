@@ -28,12 +28,9 @@
                                     <path d="M369.9,302.1h-14.5v-69.4h25.3c9.9,0,17.2,6.3,17.2,18.2c0,8.9-3.2,15.5-12.6,17l0.3,0.2 c3.2,0.4,11.8,1.4,12.6,13.7c0,0.3,1.6,20.4,1.6,20.4h-13.9c-0.4-5-1.4-17.4-1.6-19.1c-0.5-5.7-2.2-9.6-10.7-9.6h-3.8V302.1z M369.9,262.7h6.4c5.8,0,7.4-5.8,7.4-10.2c0-6.6-2.8-9.1-7.4-9.1h-6.4V262.7z" />
                                 </g>
                             </svg>
-                            <span style="font-size:24px;font-weight:700;letter-spacing:0.04em;color:#ffffff;">
-                                Stream Deck
-                            </span>
                         </div>
                         <p style="margin:12px 0 0 0;color:#d4d4d4;line-height:1.5;">
-                            Bonjour {{ $userName }}, votre facture vient d'etre generee.
+                            Bonjour {{ $userName }}, votre facture vient d'être generée.
                         </p>
                     </td>
                 </tr>
@@ -56,7 +53,7 @@
                 <tr>
                     <td style="padding:20px 28px;background:#0a0a0a;border-top:1px solid #262626;">
                         <p style="margin:0;color:#8a8a8a;font-size:12px;">
-                            Cet email a ete envoye automatiquement par Stream Deck.
+                            Cet email a été envoye automatiquement par Stream Deck.
                         </p>
                     </td>
                 </tr>

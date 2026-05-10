@@ -18,7 +18,7 @@ class RunBillingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:run-billing';
+    protected $signature = 'app:run-billing {--watch : Run billing continuously every minute}';
 
     /**
      * The console command description.
@@ -32,6 +32,31 @@ class RunBillingCommand extends Command
      */
     public function handle(): int
     {
+        if ($this->option('watch')) {
+            $this->info('Billing watch mode started (interval: 60s). Press Ctrl+C to stop.');
+
+            while (true) {
+                $processed = $this->processDueSubscriptions();
+                $this->line(sprintf('[%s] processed: %d', now()->toDateTimeString(), $processed));
+                sleep(60);
+            }
+        }
+
+        $processed = $this->processDueSubscriptions();
+
+        if ($processed === 0) {
+            $this->info('No due subscriptions found.');
+
+            return self::SUCCESS;
+        }
+
+        $this->info("Billing completed. {$processed} invoice(s) generated.");
+
+        return self::SUCCESS;
+    }
+
+    private function processDueSubscriptions(): int
+    {
         $dueSubscriptions = Subscription::query()
             ->with(['user:id,email,name', 'plan:id,price_xof'])
             ->where('status', 'active')
@@ -39,9 +64,7 @@ class RunBillingCommand extends Command
             ->get();
 
         if ($dueSubscriptions->isEmpty()) {
-            $this->info('No due subscriptions found.');
-
-            return self::SUCCESS;
+            return 0;
         }
 
         $processed = 0;
@@ -55,9 +78,11 @@ class RunBillingCommand extends Command
                     'billed_at' => now(),
                 ]);
 
-                $nextBillingAt = $subscription->billing_period === 'year'
-                    ? $subscription->next_billing_at->copy()->addYearNoOverflow()
-                    : $subscription->next_billing_at->copy()->addMonthNoOverflow();
+                $nextBillingAt = match ($subscription->billing_period) {
+                    'year' => $subscription->next_billing_at->copy()->addYearNoOverflow(),
+                    'month' => $subscription->next_billing_at->copy()->addMonthNoOverflow(),
+                    default => $subscription->next_billing_at->copy()->addMinute(),
+                };
 
                 $subscription->update([
                     'next_billing_at' => $nextBillingAt->toDateTimeString(),
@@ -82,8 +107,6 @@ class RunBillingCommand extends Command
             });
         }
 
-        $this->info("Billing completed. {$processed} invoice(s) generated.");
-
-        return self::SUCCESS;
+        return $processed;
     }
 }

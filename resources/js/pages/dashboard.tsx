@@ -10,14 +10,14 @@ interface DashboardProps {
 
 interface SubscriptionForm {
     plan_id: number;
-    billing_period: 'month' | 'year';
+    billing_period: 'minute' | 'month' | 'year';
 }
 
 const formatMoney = (value: number) =>
     `${new Intl.NumberFormat('fr-FR').format(value)} FCFA`;
 
-const periodLabel = (period: 'month' | 'year') =>
-    period === 'year' ? 'ans' : 'mois';
+const periodLabel = (period: 'minute' | 'month' | 'year') =>
+    period === 'year' ? 'an' : period === 'month' ? 'mois' : 'minute';
 
 export default function Dashboard({
     plans,
@@ -37,7 +37,7 @@ export default function Dashboard({
     const defaultPlan = plans[0];
     const { data, setData, post, processing } = useForm<SubscriptionForm>({
         plan_id: defaultPlan?.id ?? 0,
-        billing_period: 'month',
+        billing_period: defaultPlan?.frequency ?? 'month',
     });
 
     const selectedPlan = plans.find((plan) => plan.id === data.plan_id) ?? defaultPlan;
@@ -151,10 +151,14 @@ export default function Dashboard({
                                 <select
                                     value={data.billing_period}
                                     onChange={(event) =>
-                                        setData('billing_period', event.target.value as 'month' | 'year')
+                                        setData(
+                                            'billing_period',
+                                            event.target.value as 'minute' | 'month' | 'year',
+                                        )
                                     }
                                     className="w-full rounded-lg border border-white/15 bg-[#0b0b0b] px-4 py-3 text-white focus:border-[#E50914] focus:outline-none"
                                 >
+                                    <option value="minute">Par minute</option>
                                     <option value="month">Mensuel</option>
                                     <option value="year">Annuel</option>
                                 </select>
@@ -166,7 +170,7 @@ export default function Dashboard({
                                     <span className="font-semibold text-white">
                                         {formatMoney(billingPrice)}
                                     </span>{' '}
-                                    tous les{' '}
+                                    par{' '}
                                     <span className="font-semibold text-white">
                                         {periodLabel(data.billing_period)}
                                     </span>

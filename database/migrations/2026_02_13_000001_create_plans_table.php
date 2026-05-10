@@ -16,11 +16,18 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('price_xof');
-            $table->enum('frequency', ['month', 'year']);
+            $table->enum('frequency', ['minute', 'month', 'year']);
             $table->timestamps();
         });
 
         DB::table('plans')->insert([
+            [
+                'name' => 'Minute',
+                'price_xof' => 100,
+                'frequency' => 'minute',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
             [
                 'name' => 'Basique',
                 'price_xof' => 5000,

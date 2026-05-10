@@ -21,7 +21,7 @@ class SubscriptionController extends Controller
     {
         $validated = $request->validate([
             'plan_id' => ['required', 'integer', 'exists:plans,id'],
-            'billing_period' => ['required', 'in:month,year'],
+            'billing_period' => ['required', 'in:minute,month,year'],
         ]);
 
         $user = $request->user();
@@ -105,8 +105,10 @@ class SubscriptionController extends Controller
 
     private function nextBillingAtFromPeriod(string $billingPeriod): CarbonInterface
     {
-        return $billingPeriod === 'year'
-            ? now()->addYearNoOverflow()
-            : now()->addMonthNoOverflow();
+        return match ($billingPeriod) {
+            'year' => now()->addYearNoOverflow(),
+            'month' => now()->addMonthNoOverflow(),
+            default => now()->addMinute(),
+        };
     }
 }

@@ -1,4 +1,4 @@
-export type PlanFrequency = 'month' | 'year';
+export type PlanFrequency = 'minute' | 'month' | 'year';
 export type SubscriptionStatus = 'active' | 'cancelled';
 
 export interface BillingPlan {

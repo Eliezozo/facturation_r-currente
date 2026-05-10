@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('plan_id')->constrained()->cascadeOnDelete();
-            $table->enum('billing_period', ['month', 'year']);
+            $table->enum('billing_period', ['minute', 'month', 'year']);
             $table->enum('status', ['active', 'cancelled'])->default('active');
             $table->timestamp('next_billing_at');
             $table->timestamps();
