@@ -13,7 +13,7 @@ SaaS de facturation recurrente avec interface Inertia + React + TypeScript, desi
 
 ## Fonctionnalites principales
 
-- Gestion des plans de facturation (`month` / `year`)
+- Gestion des plans de facturation (`month` / `year` / 'minutes')
 - Souscription utilisateur
 - Generation automatique de facture
 - Historique de facturation

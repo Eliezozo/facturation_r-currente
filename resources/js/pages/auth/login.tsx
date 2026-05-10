@@ -100,6 +100,13 @@ export default function Login({
                                 {processing && <Spinner />}
                                 Se connecter
                             </Button>
+
+                            <div className="mt-4 text-center text-sm text-zinc-300">
+                                Ou connectez-vous directement en tant qu'administrateur :{' '}
+                                <TextLink href="/admin/subscriptions" tabIndex={6}>
+                                    Espace admin
+                                </TextLink>
+                            </div>
                         </div>
 
                         {canRegister && (
